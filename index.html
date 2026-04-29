@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>💎 Діаманти Рефлексії</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+      color: #333;
+    }
+    
+    h1 {
+      color: white;
+      text-align: center;
+      margin: 20px 0 30px;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+      font-size: 1.8rem;
+    }
+    
+    .subtitle {
+      color: rgba(255,255,255,0.9);
+      text-align: center;
+      margin-bottom: 30px;
+      font-size: 1.1rem;
+      max-width: 500px;
+    }
+    
+    .diamonds-container {
+      display: flex;
+      gap: 25px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 30px;
+    }
+    
+    .diamond {
+      cursor: pointer;
+      width: 110px;
+      height: 110px;
+      clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+      position: relative;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.25);
+    }
+    
+    .diamond:hover {
+      transform: scale(1.1) rotate(5deg);
+      box-shadow: 0 12px 35px rgba(0,0,0,0.35);
+      z-index: 10;
+    }
+    
+    .diamond:active {
+      transform: scale(0.95);
+    }
+    
+    .diamond.completed {
+      opacity: 0.6;
+      cursor: default;
+    }
+    
+    .diamond.completed:hover {
+      transform: none;
+    }
+    
+    .diamond span {
+      color: white;
+      font-weight: bold;
+      font-size: 1.8rem;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+      pointer-events: none;
+    }
+    
+    .diamond-1 { background: linear-gradient(135deg, #70d6ff, #4facfe); }
+    .diamond-2 { background: linear-gradient(135deg, #ff70a6, #ff4d7a); }
+    .diamond-3 { background: linear-gradient(135deg, #ffd670, #ffb347); }
+    
+    /* Форма */
+    #form-container {
+      background: white;
+      border-radius: 20px;
+      padding: 25px;
+      max-width: 500px;
+      width: 100%;
+      box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+      animation: slideUp 0.4s ease;
+      display: none;
+    }
+    
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    #question-text {
+      font-weight: 600;
+      font-size: 1.2rem;
+      margin-bottom: 15px;
+      color: #444;
+      line-height: 1.4;
+    }
+    
+    #answer-input {
+      width: 100%;
+      padding: 15px;
+      border: 2px solid #e0e0e0;
+      border-radius: 12px;
+      font-size: 1rem;
+      resize: vertical;
+      min-height: 100px;
+      transition: border-color 0.3s;
+      font-family: inherit;
+    }
+    
+    #answer-input:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+    
+    .buttons-row {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+      flex-wrap: wrap;
+    }
+    
+    button {
+      flex: 1;
+      min-width: 120px;
+      padding: 12px 20px;
+      border: none;
+      border-radius: 10px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .btn-save {
+      background: linear-gradient(135deg, #4caf50, #45a049);
+      color: white;
+    }
+    
+    .btn-save:hover {
+      background: linear-gradient(135deg, #45a049, #3d8b40);
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(76, 175, 80, 0.4);
+    }
+    
+    .btn-skip {
+      background: #e0e0e0;
+      color: #555;
+    }
+    
+    .btn-skip:hover {
+      background: #d0d0d0;
+      transform: translateY(-2px);
+    }
+    
+    .btn-close {
+      background: #ff6b6b;
+      color: white;
+    }
+    
+    .btn-close:hover {
+      background: #ee5a5a;
+      transform: translateY(-2px);
+    }
+    
+    /* Результати */
+    #results-container {
+      background: white;
+      border-radius: 20px;
+      padding: 25px;
+      max-width: 600px;
+      width: 100%;
+      margin-top: 20px;
+      box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+      display: none;
+    }
+    
+    .result-item {
+      padding: 15px;
+      margin: 10px 0;
+      background: #f8f9fa;
+      border-radius: 10px;
+      border-left: 4px solid #667eea;
+    }
+    
+    .result-question {
+      font-weight: 600;
+      color: #555;
+      margin-bottom: 8px;
+      font-size: 0.95rem;
+    }
+    
+    .result-answer {
+      color: #333;
+      line-height: 1.5;
+      white-space: pre-wrap;
+    }
+    
+    .result-empty {
+      color: #999;
+      font-style: italic;
+    }
+    
+    .actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+      flex-wrap: wrap;
+    }
+    
+    .btn-review {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+    }
+    
+    .btn-review:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+    }
+    
+    .btn-reset {
+      background: #ff9800;
+      color: white;
+    }
+    
+    .btn-reset:hover {
+      background: #f57c00;
+      transform: translateY(-2px);
+    }
+    
+    .btn-export {
+      background: #2196f3;
+      color: white;
+    }
+    
+    .btn-export:hover {
+      background: #1976d2;
+      transform: translateY(-2px);
+    }
+    
+    /* Прогрес */
+    .progress-bar {
+      width: 100%;
+      max-width: 400px;
+      height: 8px;
+      background: rgba(255,255,255,0.3);
+      border-radius: 4px;
+      margin: 15px 0 25px;
+      overflow: hidden;
+    }
+    
+    .progress-fill {
+      height: 100%;
+      background: white;
+      border-radius: 4px;
+      transition: width 0.4s ease;
+      width: 0%;
+    }
+    
+    .progress-text {
+      color: rgba(255,255,255,0.95);
+      font-size: 0.95rem;
+      margin-bottom: 5px;
+    }
+    
+    /* Адаптивність */
+    @media (max-width: 480px) {
+      .diamonds-container {
+        gap: 15px;
+      }
+      
+      .diamond {
+        width: 90px;
+        height: 90px;
+      }
+      
+      .diamond span {
+        font-size: 1.5rem;
+      }
+      
+      h1 {
+        font-size: 1.5rem;
+      }
+      
+      .buttons-row,
+      .actions {
+        flex-direction: column;
+      }
+      
+      button {
+        min-width: auto;
+      }
+    }
+    
+    /* Ефект блиску для діамантів */
+    .diamond::before {
+      content: '';
+      position: absolute;
+      top: 15%;
+      left: 20%;
+      width: 25%;
+      height: 15%;
+      background: rgba(255,255,255,0.4);
+      border-radius: 50%;
+      transform: rotate(45deg);
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+  <h1>💎 Діаманти Рефлексії</h1>
+  <p class="subtitle">Натисни на діамант і поділися думками про сьогоднішній день</p>
+  
+  <div class="progress-text">Прогрес: <span id="progress-count">0</span>/3</div>
+  <div class="progress-bar">
+    <div class="progress-fill" id="progress-fill"></div>
+  </div>
+  
+  <div class="diamonds-container">
+    <div class="diamond diamond-1" onclick="openTask(1)" id="d1">
+      <span>1</span>
+    </div>
+    <div class="diamond diamond-2" onclick="openTask(2)" id="d2">
+      <span>2</span>
+    </div>
+    <div class="diamond diamond-3" onclick="openTask(3)" id="d3">
+      <span>3</span>
+    </div>
+  </div>
+  
+  <div id="form-container">
+    <p id="question-text"></p>
+    <textarea id="answer-input" placeholder="Твоя відповідь..." rows="4"></textarea>
+    <div class="buttons-row">
+      <button class="btn-save" onclick="saveAnswer()">💾 Зберегти</button>
+      <button class="btn-skip" onclick="skipAnswer()">⏭ Пропустити</button>
+      <button class="btn-close" onclick="closeForm()">✕ Закрити</button>
+    </div>
+  </div>
+  
+  <div id="results-container">
+    <h3 style="margin-bottom: 15px; color: #444;">📝 Твої відповіді:</h3>
+    <div id="results-list"></div>
+    <div class="actions">
+      <button class="btn-review" onclick="showFormAgain()">✏️ Редагувати</button>
+      <button class="btn-export" onclick="exportAnswers()">📤 Експорт</button>
+      <button class="btn-reset" onclick="resetGame()">🔄 Почати знову</button>
+    </div>
+  </div>
+
+  <script>
+    let currentStep = 0;
+    const questions = [
+      "",
+      "✨ Що головне ти сьогодні зрозумів/ла?",
+      "💡 Яка думка чи ідея запам'яталась найбільше?",
+      "😄 Що тебе здивувало або розсмішило?"
+    ];
+    
+    // Завантаження збережених даних
+    document.addEventListener('DOMContentLoaded', () => {
+      loadProgress();
+      updateProgressBar();
+    });
+    
+    function openTask(step) {
+      // Якщо вже завершено - показати результати
+      if (isAllCompleted()) {
+        showResults();
+        return;
+      }
+      
+      // Якщо цей крок вже виконано - запитати чи хочете редагувати
+      if (localStorage.getItem(`answer_${step}`)) {
+        if (!confirm(`Це питання вже має відповідь. Хочете відредагувати?`)) {
+          return;
+        }
+      }
+      
+      currentStep = step;
+      document.getElementById('form-container').style.display = 'block';
+      document.getElementById('results-container').style.display = 'none';
+      document.getElementById('question-text').innerText = questions[step];
+      document.getElementById('answer-input').value = localStorage.getItem(`answer_${step}`) || "";
+      document.getElementById('answer-input').focus();
+    }
+    
+    function saveAnswer() {
+      const answer = document.getElementById('answer-input').value.trim();
+      
+      if (answer === "") {
+        if (!confirm("Поле порожнє. Зберегти як є?")) {
+          return;
+        }
+      }
+      
+      localStorage.setItem(`answer_${currentStep}`, answer);
+      localStorage.setItem(`completed_${currentStep}`, 'true');
+      
+      // Візуальне оновлення
+      document.getElementById(`d${currentStep}`).classList.add('completed');
+      
+      // Показати результат
+      alert(`✅ Відповідь на питання №${currentStep} збережена!`);
+      
+      closeForm();
+      updateProgressBar();
+      
+      // Якщо всі завершені - запропонувати перегляд
+      if (isAllCompleted()) {
+        setTimeout(() => {
+          if (confirm("🎉 Вітаю! Всі діаманти активовано!\nХочеш переглянути свої відповіді?")) {
+            showResults();
+          }
+        }, 300);
+      }
+    }
+    
+    function skipAnswer() {
+      if (confirm("Пропустити це питання?")) {
+        localStorage.setItem(`completed_${currentStep}`, 'true');
+        document.getElementById(`d${currentStep}`).classList.add('completed');
+        closeForm();
+        updateProgressBar();
+      }
+    }
+    
+    function closeForm() {
+      document.getElementById('form-container').style.display = 'none';
+    }
+    
+    function showResults() {
+      const list = document.getElementById('results-list');
+      list.innerHTML = '';
+      
+      for (let i = 1; i <= 3; i++) {
+        const item = document.createElement('div');
+        item.className = 'result-item';
+        
+        const answer = localStorage.getItem(`answer_${i}`) || "";
+        
+        item.innerHTML = `
+          <div class="result-question">💎 ${questions[i]}</div>
+          <div class="result-answer ${answer ? '' : 'result-empty'}">
+            ${answer || '〈відповідь не надана〉'}
+          </div>
+        `;
+        list.appendChild(item);
+      }
+      
+      document.getElementById('results-container').style.display = 'block';
+      document.getElementById('form-container').style.display = 'none';
+      
+      // Прокрутити до результатів
+      document.getElementById('results-container').scrollIntoView({ behavior: 'smooth' });
+    }
+    
+    function showFormAgain() {
+      document.getElementById('results-container').style.display = 'none';
+      // Відкрити перше незавершене або перше питання
+      for (let i = 1; i <= 3; i++) {
+        if (!localStorage.getItem(`completed_${i}`)) {
+          openTask(i);
+          return;
+        }
+      }
+      openTask(1); // Всі завершені - відкрити перше для редагування
+    }
+    
+    function exportAnswers() {
+      let text = "📝 Діаманти Рефлексії - Мої відповіді\n";
+      text += "📅 " + new Date().toLocaleDateString('uk-UA') + "\n\n";
+      
+      for (let i = 1; i <= 3; i++) {
+        const answer = localStorage.getItem(`answer_${i}`) || "〈не надано〉";
+        text += `💎 ${i}. ${questions[i]}\n`;
+        text += `➤ ${answer}\n\n`;
+      }
+      
+      // Створити файл для завантаження
+      const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `рефлексія_${new Date().toISOString().slice(0,10)}.txt`;
+      a.click();
+      URL.revokeObjectURL(url);
+      
+      alert("📤 Відповіді експортовано у файл!");
+    }
+    
+    function resetGame() {
+      if (confirm("⚠️ Ви впевнені, що хочете видалити всі відповіді та почати знову?")) {
+        for (let i = 1; i <= 3; i++) {
+          localStorage.removeItem(`answer_${i}`);
+          localStorage.removeItem(`completed_${i}`);
+          document.getElementById(`d${i}`).classList.remove('completed');
+        }
+        document.getElementById('results-container').style.display = 'none';
+        updateProgressBar();
+        alert("🔄 Гра скинута! Можна починати знову ✨");
+      }
+    }
+    
+    // Допоміжні функції
+    function isAllCompleted() {
+      return [1, 2, 3].every(i => localStorage.getItem(`completed_${i}`));
+    }
+    
+    function updateProgressBar() {
+      const completed = [1, 2, 3].filter(i => localStorage.getItem(`completed_${i}`)).length;
+      document.getElementById('progress-count').textContent = completed;
+      document.getElementById('progress-fill').style.width = `${(completed / 3) * 100}%`;
+    }
+    
+    function loadProgress() {
+      for (let i = 1; i <= 3; i++) {
+        if (localStorage.getItem(`completed_${i}`)) {
+          document.getElementById(`d${i}`).classList.add('completed');
+        }
+      }
+    }
+    
+    // Закриття форми по ESC
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        closeForm();
+      }
+    });
+    
+    // Збереження по Ctrl+Enter
+    document.getElementById('answer-input')?.addEventListener('keydown', (e) => {
+      if (e.ctrlKey && e.key === 'Enter') {
+        saveAnswer();
+      }
+    });
+  </script>
+</body>
+</html>
